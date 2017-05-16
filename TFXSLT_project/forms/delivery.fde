@@ -1,0 +1,468 @@
+#------------------------------------------------------------------------------#
+# DELIVERY Beispiel FormatBeschreibung                (c) Actis GmbH 1997
+# $Header: $
+#
+# $Log: $
+#
+# Das ist ein Beispiel fuer eine Lieferabruf-Nachricht mit
+# Segmenten aehnlich den EDIFACT oder ODETTE Segmenten.
+# 
+# 
+#------------------------------------------------------------------------------#
+#
+# Neue Formatbeschreibung
+#!FGFLAGS=1
+# Ein Dummy-Objekt, das als Default Wert einen Versions-String enhaelt.
+version[0:"version"]*1
+# Delimiter Definition
+UNA[0:"UNA"]*1
+data[0:"UNB"]+.
+
+data:
+# Service Segmente
+UNB[0:"UNB"]
+Message[0:"UNH"]+
+
+UNZ[0:"UNZ"];
+
+Message:
+	UNH[0:"UNH"]
+# Begin Of Message Nachrichtenkennung
+	BGM  [0:"BGM"]+1
+# Date Time Nachrichtendatum
+	DTM  [0:"DTM"]
+
+# Name And Adresse Adressen von Kaeufer und Verkaeufer
+# Unterschieden durch die Qualifier SE (Seller) und BY (Buyer).
+# Die Anliefer-Informationsgruppe (Consignee) beginnt mit einem
+# NAD Segment, das durch die Segment-Kennung und den
+# Qualifier CS identifiziert wird.
+#
+# Die Reihenfolge der NAD-Angaben ist beliebig, aber ein
+# CS-NAD leitet die Consignee-Gruppe ein, die die Artikel-
+# gruppen enthaelt. 
+
+	NAD_Group[0:"NAD"]+
+	UNT[0:"UNT"];
+
+NAD_Group:
+		NAD[0:"NAD+BY"] | 
+		NAD[0:"NAD+SE"] | 
+		Consignee[0:"NAD+CS"]+;
+
+Consignee:	NAD_Cons
+			Article[0:"ARD"]+;
+
+Article:	ARD
+			PDN[0:"PDN"]*
+			DEL[0:"DEL"]+
+			FTX[0:"FTX"]*;
+
+#------------------------------------------------------------------------------#
+#                                    Segments                                  #
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# EDIFACT Service Segments
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+# UNA - Trennzeichenvorgabe                                                    #
+#------------------------------------------------------------------------------#
+
+UNA : idUNA
+      Com_Sep
+      Data_Sep
+      Decimal_Notation
+      Release_Ind
+      Filler
+      Seg_Terminator;
+
+idUNA           : STRING {LENGTH=3};
+Com_Sep         : STRING {LENGTH=1, DEFAULT=":"};
+Data_Sep        : STRING {LENGTH=1, DEFAULT="+"};
+Decimal_Notation: STRING {LENGTH=1, DEFAULT="."};
+Release_Ind     : STRING {LENGTH=1, DEFAULT="?"};
+Filler          : STRING {LENGTH=1, DEFAULT=" "};
+Seg_Terminator  : STRING {LENGTH=1, DEFAULT="'"};
+
+#------------------------------------------------------------------------------#
+# UNB INTERCHANGE HEADER                                                       #
+#------------------------------------------------------------------------------#
+
+UNB	{ DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idUNB
+		UNB_S001_Syntax_Identifier
+		UNB_S002_Interchange_Sender
+		UNB_S003_Interchange_Recipient
+		UNB_S004_DateTime_Preparation
+		UNB_0020_Interchange_Control_Ref
+		UNB_S005_Recipients_Ref_Passwd*1
+		UNB_0026_Application_Reference*1
+		UNB_0029_Processing_Prior_Code*1
+		UNB_0031_Acknowledgement_Request*1
+		UNB_0032_Communic_Agreement_ID*1
+		UNB_0035_Test_Indicator*1;
+
+UNB_S004_DateTime_Preparation	{	DELIMITER=Data_Sep, SHORTEN=Com_Sep }:
+		UNB_0017_Date
+		UNB_0019_Time;
+
+UNB_S003_Interchange_Recipient	{	DELIMITER=Data_Sep, SHORTEN=Com_Sep }:
+		UNB_0010_Recipient_Identific
+		UNB_0007_Identif_Code_Qualif_R*1
+		UNB_0014_Routing_Address*1;
+
+UNB_S002_Interchange_Sender		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		UNB_0004_Sender_Identification
+		UNB_0007_Identif_Code_Qualif_S*1
+		UNB_0008_Address_For_Rev_Routing*1;
+
+UNB_S005_Recipients_Ref_Passwd	{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		UNB_0022_Recipients_Ref_Passwd
+		UNB_0025_Recip_RefPw_Qualifier*1;
+
+UNB_S001_Syntax_Identifier		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		UNB_0001_syntax_identifier
+		UNB_0002_Syntax_Version_Number;
+
+idUNB:			STRING	{	DEFAULT="UNB", LENGTH=3,	DELIMITER=Data_Sep	};
+UNB_0031_Acknowledgement_Request:STRING	{	LENGTH=1,		DELIMITER=Data_Sep};
+UNB_0008_Address_For_Rev_Routing:STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Com_Sep};
+UNB_0026_Application_Reference:	STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Data_Sep};
+UNB_0032_Communic_Agreement_ID:	STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Data_Sep};
+UNB_0017_Date:				 	NSTRINGA{	MAXLENGTH=6,	MINLENGTH=1,		DELIMITER=Com_Sep,	PICTURE="YYMMDD",	MISSVALUE="0" };
+UNB_0007_Identif_Code_Qualif_R:	STRING	{	MINLENGTH=1, MAXLENGTH=4,	DELIMITER=Com_Sep};
+UNB_0007_Identif_Code_Qualif_S:	STRING	{	MINLENGTH=1, MAXLENGTH=4,	DELIMITER=Com_Sep};
+UNB_0020_Interchange_Control_Ref:STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Data_Sep};
+UNB_0029_Processing_Prior_Code:	STRING	{	LENGTH=1,		DELIMITER=Data_Sep};
+UNB_0025_Recip_RefPw_Qualifier:	STRING	{	MINLENGTH=1, MAXLENGTH=2,	DELIMITER=Com_Sep};
+UNB_0010_Recipient_Identific:	STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Com_Sep};
+UNB_0022_Recipients_Ref_Passwd:	STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Com_Sep};
+UNB_0014_Routing_Address:		STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Com_Sep};
+UNB_0004_Sender_Identification:	STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Com_Sep};
+UNB_0001_syntax_identifier:		STRING	{	LENGTH=4,		DELIMITER=Com_Sep, DEFAULT="UNOA"};
+UNB_0002_Syntax_Version_Number:	STRING	{	LENGTH=1,		DELIMITER=Com_Sep, DEFAULT="2"};
+UNB_0035_Test_Indicator:		STRING	{	LENGTH=1,		DELIMITER=Data_Sep};
+UNB_0019_Time:					NSTRINGA{	MAXLENGTH=4,	MINLENGTH=1,		DELIMITER=Com_Sep};
+
+#------------------------------------------------------------------------------#
+# UNH Message header                                                           #
+#------------------------------------------------------------------------------#
+
+UNH	{ DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idUNH
+		UNH_0062_Message_Ref_Number
+		UNH_S009_Message_Identifier
+		UNH_0068_Common_Access_Ref*1
+		UNH_S010_Status_Of_The_Transfer*1;
+
+UNH_S009_Message_Identifier		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		UNH_0065_Message_Type[0:"DELIVR"]
+		UNH_0052_Message_Version_Nr
+		UNH_0054_Message_Release_Nr
+		UNH_0051_Controlling_Agency*1
+		UNH_0057_Assoc_Assigned_Code*1;
+
+UNH_S010_Status_Of_The_Transfer	{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		UNH_0070_Sequence_Of_Transfers
+		UNH_0073_First_Last_Transfer*1;
+
+idUNH:			STRING	{	DEFAULT="UNH", LENGTH=3,	DELIMITER=Data_Sep	};
+UNH_0057_Assoc_Assigned_Code:	STRINGA	{	MINLENGTH=1, MAXLENGTH=6,	DELIMITER=Com_Sep};
+UNH_0068_Common_Access_Ref:		STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Data_Sep};
+UNH_0051_Controlling_Agency:	STRINGA	{	MINLENGTH=1, MAXLENGTH=2,	DELIMITER=Com_Sep,
+											DEFAULT="UN"};
+UNH_0073_First_Last_Transfer:	STRING	{	LENGTH=1,		DELIMITER=Com_Sep};
+UNH_0062_Message_Ref_Number:	STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Data_Sep};
+UNH_0054_Message_Release_Nr:	STRINGA{	MINLENGTH=1, MAXLENGTH=3,	DELIMITER=Com_Sep, DEFAULT="3"};
+UNH_0065_Message_Type:			STRING	{	MINLENGTH=1, MAXLENGTH=6,	DELIMITER=Com_Sep, DEFAULT="DELVER"};
+UNH_0052_Message_Version_Nr:	STRING	{	MINLENGTH=1, MAXLENGTH=3,	DELIMITER=Com_Sep, DEFAULT="1"};
+UNH_0070_Sequence_Of_Transfers:	STRING	{	MINLENGTH=1, MAXLENGTH=2,	DELIMITER=Com_Sep};
+
+#------------------------------------------------------------------------------#
+# UNT Message trailer                                                          #
+#------------------------------------------------------------------------------#
+
+UNT	{ DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idUNT
+		UNT_0074_Number_Of_Segments
+		UNT_0062_Message_Ref_Number;
+
+idUNT:			STRING	{	DEFAULT="UNT", LENGTH=3,	DELIMITER=Data_Sep	};
+UNT_0062_Message_Ref_Number:	STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Data_Sep};
+UNT_0074_Number_Of_Segments:	STRING	{	MINLENGTH=1, MAXLENGTH=6,	DELIMITER=Data_Sep};
+
+#------------------------------------------------------------------------------#
+# UNZ INTERCHANGE TRAILER                                                      #
+#------------------------------------------------------------------------------#
+
+
+UNZ	{ DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idUNZ
+		UNZ_0036_Inter_Control_Count
+		UNZ_0020_Inter_Control_Ref;
+
+idUNZ:			STRING	{	DEFAULT="UNZ", LENGTH=3,	DELIMITER=Data_Sep	};
+UNZ_0036_Inter_Control_Count:	STRING	{	MINLENGTH=1, MAXLENGTH=6,	DELIMITER=Data_Sep};
+UNZ_0020_Inter_Control_Ref:		STRING	{	MINLENGTH=1, MAXLENGTH=14,	DELIMITER=Data_Sep};
+
+
+#------------------------------------------------------------------------------#
+# Segmente der Nachricht (Nutzdatensegmente)
+#------------------------------------------------------------------------------#
+# BGM Beginning of message  Nachrichtenkopf                                    #
+#------------------------------------------------------------------------------#
+
+BGM   {DELIMITER=Seg_Terminator,ESCAPE=Release_Ind,SHORTEN=Data_Sep}:
+      idBGM
+      BGM_C002   =1
+      BGM_1004_Document_No   *1
+      BGM_1225_Message_Function_C*1
+      BGM_4343_Response_Type_C *1;
+
+BGM_C002    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      BGM_1001_Document_Name_C=1
+      BGM_1131_Code_List_Qualif*1
+      BGM_3055_Code_List_Resp*1
+      BGM_1000_Document_Name*1;
+
+idBGM      :  STRINGA {   LENGTH= 3,DELIMITER=Data_Sep,DEFAULT="BGM"};
+BGM_1004_Document_No     :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Data_Sep};
+BGM_1225_Message_Function_C:  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+BGM_4343_Response_Type_C :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+BGM_1001_Document_Name_C :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+BGM_1131_Code_List_Qualif:  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+BGM_3055_Code_List_Resp  :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+BGM_1000_Document_Name   :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+
+#------------------------------------------------------------------------------#
+# DTM Date/time/period                                                       #
+#------------------------------------------------------------------------------#
+
+DTM {DELIMITER=Seg_Terminator,ESCAPE=Release_Ind,SHORTEN=Data_Sep}:
+      idDTM
+      DTM_C507   +1;
+
+DTM_C507    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      DTM_2005_Date_Qualif   +1
+      DTM_2380_Date_Time   *1
+      DTM_2379_Format_Qualif  *1;
+
+idDTM      :  STRINGA {   LENGTH= 3,DELIMITER=Data_Sep,DEFAULT="DTM"};
+DTM_2005_Date_Qualif   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+DTM_2380_Date_Time     :  STRINGA {LENGTH=6,DELIMITER=Com_Sep, PICTURE="YYMMDD" };
+DTM_2379_Format_Qualif :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+
+#------------------------------------------------------------------------------#
+# NAD Name and address                                                       #
+#------------------------------------------------------------------------------#
+
+NAD {DELIMITER=Seg_Terminator,ESCAPE=Release_Ind,SHORTEN=Data_Sep}:
+      idNAD
+      NAD_3035_Party_Qualif   +1
+      NAD_C082   =1
+      NAD_C058   *1
+      NAD_C080   *1
+      NAD_C059   *1
+      NAD_3164_City_Name   *1
+      NAD_3229_Country_Sub_ID   *1
+      NAD_3251_Postcode_ID   *1
+      NAD_3207_Country_C   *1;
+
+NAD_C082    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_3039_Party_ID_Ident   +1
+      NAD_1131_Code_List_Qualif   *1
+      NAD_3055_Code_List_Resp   *1;
+
+NAD_C058    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_3124_Name_and_Address_1
+      NAD_3124_Name_and_Address_2*1
+      NAD_3124_Name_and_Address_3*1
+      NAD_3124_Name_and_Address_4*1
+      NAD_3124_Name_and_Address_5*1;
+
+NAD_C080    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_3036_Party_Name+5
+      NAD_3045_Party_Name_Format_C   *1;
+
+NAD_C059    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_3042_Street_and_NO+4;
+
+idNAD      :  STRINGA {   LENGTH= 3,DELIMITER=Data_Sep,DEFAULT="NAD"};
+NAD_3035_Party_Qualif   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+NAD_3164_City_Name   :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Data_Sep};
+NAD_3229_Country_Sub_ID   :  STRINGA {MINLENGTH=1, MAXLENGTH= 9,DELIMITER=Data_Sep};
+NAD_3251_Postcode_ID   :  STRINGA {MINLENGTH=1, MAXLENGTH= 9,DELIMITER=Data_Sep};
+NAD_3207_Country_C   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+NAD_3039_Party_ID_Ident   :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_1131_Code_List_Qualif   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_3055_Code_List_Resp   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_3124_Name_and_Address_1:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3124_Name_and_Address_2:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3124_Name_and_Address_3:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3124_Name_and_Address_4:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3124_Name_and_Address_5:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3036_Party_Name:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_3045_Party_Name_Format_C   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_3042_Street_and_NO:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+
+
+#------------------------------------------------------------------------------#
+# NAD_Cons Name and address of Consignee                                       #
+#------------------------------------------------------------------------------#
+
+NAD_Cons {DELIMITER=Seg_Terminator,ESCAPE=Release_Ind,SHORTEN=Data_Sep}:
+      idNAD_Cons_
+      NAD_Cons_3035_Party_Qualif   +1
+      NAD_Cons_C082   =1
+      NAD_Cons_C058   *1
+      NAD_Cons_C080   *1
+      NAD_Cons_C059   *1
+      NAD_Cons_3164_City_Name   *1
+      NAD_Cons_3229_Country_Sub_ID   *1
+      NAD_Cons_3251_Postcode_ID   *1
+      NAD_Cons_3207_Country_C   *1;
+
+NAD_Cons_C082    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_Cons_3039_Party_ID_Ident   +1
+      NAD_Cons_1131_Code_List_Qualif   *1
+      NAD_Cons_3055_Code_List_Resp   *1;
+
+NAD_Cons_C058    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_Cons_3124_Name_and_Address_1
+      NAD_Cons_3124_Name_and_Address_2*1
+      NAD_Cons_3124_Name_and_Address_3*1
+      NAD_Cons_3124_Name_and_Address_4*1
+      NAD_Cons_3124_Name_and_Address_5*1;
+
+NAD_Cons_C080    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_Cons_3036_Party_Name+5
+      NAD_Cons_3045_Party_Name_Format_C   *1;
+
+NAD_Cons_C059    {DELIMITER=Data_Sep,SHORTEN=Com_Sep}:
+      NAD_Cons_3042_Street_and_NO+4;
+
+idNAD_Cons_      :  STRINGA {   LENGTH= 3,DELIMITER=Data_Sep,DEFAULT="NAD"};
+NAD_Cons_3035_Party_Qualif   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+NAD_Cons_3164_City_Name   :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Data_Sep};
+NAD_Cons_3229_Country_Sub_ID   :  STRINGA {MINLENGTH=1, MAXLENGTH= 9,DELIMITER=Data_Sep};
+NAD_Cons_3251_Postcode_ID   :  STRINGA {MINLENGTH=1, MAXLENGTH= 9,DELIMITER=Data_Sep};
+NAD_Cons_3207_Country_C   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Data_Sep};
+NAD_Cons_3039_Party_ID_Ident   :  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_1131_Code_List_Qualif   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_Cons_3055_Code_List_Resp   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_Cons_3124_Name_and_Address_1:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3124_Name_and_Address_2:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3124_Name_and_Address_3:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3124_Name_and_Address_4:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3124_Name_and_Address_5:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3036_Party_Name:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+NAD_Cons_3045_Party_Name_Format_C   :  STRINGA {MINLENGTH=1, MAXLENGTH= 3,DELIMITER=Com_Sep };
+NAD_Cons_3042_Street_and_NO:  STRINGA {MINLENGTH=1, MAXLENGTH=35,DELIMITER=Com_Sep };
+
+#-------------------------------------#
+#	ARD -- Artikel Details            #
+#-------------------------------------#
+ARD { DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idARD
+		ARD_Article_Identification
+		ARD_Qty_Delivered_Unit*1
+		ARD_Order_Identification;
+
+ARD_Article_Identification		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		ARD_7304_Buyer_Article_No
+		ARD_7194_Seller_Article_No*1
+		ARD_7008_Article_Description*5;
+
+ARD_Qty_Delivered_Unit			{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		ARD_6270_Qty_Delivered*1
+		ARD_6410_Measure_Unit_Specifier*1;
+
+ARD_Order_Identification		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		ARD_1022_Order_Contract_No
+		ARD_2001_Order_Date*1;
+
+idARD:			STRING	{DEFAULT="ARD",	LENGTH=3,	DELIMITER=Data_Sep	};
+ARD_7008_Article_Description:	STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Com_Sep};
+ARD_7304_Buyer_Article_No:		STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Com_Sep};
+ARD_6410_Measure_Unit_Specifier:STRING	{	MINLENGTH=1, MAXLENGTH=3,	DELIMITER=Com_Sep};
+ARD_1022_Order_Contract_No:		STRING	{	MINLENGTH=1, MAXLENGTH=17,	DELIMITER=Com_Sep};
+ARD_2001_Order_Date: 	        NSTRINGA{	MAXLENGTH=6,	MINLENGTH=1,		DELIMITER=Com_Sep,	PICTURE="YYMMDD",	MISSVALUE="0"};
+ARD_6270_Qty_Delivered:			NSTRINGA{	MINLENGTH=1, MAXLENGTH=10,	DELIMITER=Com_Sep};
+ARD_7194_Seller_Article_No:		STRING	{	MINLENGTH=1, MAXLENGTH=35,	DELIMITER=Com_Sep};
+
+
+#-------------------------------------#
+#	PDN -- Previous Despatch Notes    #
+#-------------------------------------#
+PDN { DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idPDN
+		PDN_Despatch_Note
+		PDN_Qty_Delivered_Received*1;
+
+PDN_Despatch_Note				{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		PDN_1128_Despatch_Note_No*1
+		PDN_2219_Despatch_Note_Date*1;
+
+PDN_Qty_Delivered_Received		{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		PDN_6270_Qty_Delivered*1
+		PDN_6872_Qty_Received*1;
+
+
+idPDN:			STRING	{	DEFAULT="PDN", LENGTH=3,	DELIMITER=Data_Sep	};
+PDN_2219_Despatch_Note_Date:	NSTRINGA{	MAXLENGTH=6,	MINLENGTH=1,		DELIMITER=Com_Sep,	PICTURE="YYMMDD",	MISSVALUE="0"	};
+PDN_1128_Despatch_Note_No:		STRING	{	MINLENGTH=1, MAXLENGTH=17,	DELIMITER=Com_Sep};
+PDN_6270_Qty_Delivered:			NSTRINGA{	MINLENGTH=1, MAXLENGTH=10,	DELIMITER=Com_Sep};
+PDN_6872_Qty_Received:			NSTRINGA{	MINLENGTH=1, MAXLENGTH=10,	DELIMITER=Com_Sep};
+
+#-------------------------------------#
+#	DEL -- Delivery Lieferdetails     #
+#-------------------------------------#
+DEL { DELIMITER=Seg_Terminator,	ESCAPE=Release_Ind,	SHORTEN=Data_Sep }:
+		idDEL
+		DEL_Date_Time_Periods
+		DEL_Qty_Status_Delivery_Type;
+
+DEL_Date_Time_Periods			{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		DEL_2803_First_Date*1
+		DEL_2002_First_Time*1
+		DEL_2805_Last_Date*1
+		DEL_2002_Last_Time*1;
+
+DEL_Qty_Status_Delivery_Type	{	DELIMITER=Data_Sep,	SHORTEN=Com_Sep	}:
+		DEL_6060_Qty
+		DEL_1310_Part_Consignment_Number*1
+		DEL_7803_Delivery_Instr_Reason*1
+		DEL_6811_Schedule_Status_Ind*1
+		DEL_6903_Cumulative_Quantity*1
+		DEL_6904_Cumul_Quant_Prior_Sched*1;
+
+idDEL:			STRING	{	DEFAULT="DEL", LENGTH=3,	DELIMITER=Data_Sep	};
+DEL_6904_Cumul_Quant_Prior_Sched:NSTRINGA{	MINLENGTH=1, MAXLENGTH=10,	DELIMITER=Com_Sep};
+DEL_6903_Cumulative_Quantity:	NSTRINGA{	MINLENGTH=1, MAXLENGTH=10,	DELIMITER=Com_Sep};
+DEL_7803_Delivery_Instr_Reason:	NSTRINGA{	LENGTH=1,		DELIMITER=Com_Sep};
+DEL_2803_First_Date:			NSTRINGA{	MAXLENGTH=6,	MINLENGTH=1,		DELIMITER=Com_Sep,	PICTURE="YYMMDD",	MISSVALUE="0"	};
+DEL_2002_First_Time:			NSTRINGA{	MAXLENGTH=4,	MINLENGTH=1,		DELIMITER=Com_Sep};
+DEL_2805_Last_Date:				NSTRINGA{	MAXLENGTH=6,	MINLENGTH=1,		DELIMITER=Com_Sep,	PICTURE="YYMMDD",	MISSVALUE="0"	};
+DEL_2002_Last_Time:				NSTRINGA{	MAXLENGTH=4,	MINLENGTH=1,		DELIMITER=Com_Sep	};
+DEL_1310_Part_Consignment_Number:STRING	{	MINLENGTH=1, MAXLENGTH=17,	DELIMITER=Com_Sep};
+DEL_6060_Qty:	NSTRINGA{	MINLENGTH=1, MAXLENGTH=15,	DELIMITER=Com_Sep};
+DEL_6811_Schedule_Status_Ind:	NSTRINGA{	LENGTH=1,		DELIMITER=Com_Sep};
+
+#------------------------------------------------------------------------------#
+# FTX Free Text
+#------------------------------------------------------------------------------#
+
+
+FTX   {DELIMITER=Seg_Terminator,ESCAPE=Release_Ind,SHORTEN=Data_Sep}:
+      idFTX
+	  Free_text;
+Free_text { DELIMITER=Data_Sep, SHORTEN=Com_Sep}:
+	  Free_text_line+3;
+
+idFTX:	STRINGA { LENGTH=3, DEFAULT="FTX", DELIMITER=Data_Sep };
+Free_text_line:	STRINGA { MINLENGTH=1, MAXLENGTH=35, DELIMITER=Com_Sep };
+
+
+version			: STRINGA {	MAXLENGTH=250, DEFAULT="$Header: $" };

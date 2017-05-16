@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping version="1.0" sourceDescription="forms/MathServiceNoPolicy_950c81dd_Reply.fde" targetDescription="forms/delivery.fde">
+    <properties>
+        <property id="author">dibanescu</property>
+        <property id="creation">10/13/16 10:15 AM</property>
+        <property id="lastEditor">dibanescu</property>
+    </properties>
+    <conversions>
+        <conversion order="1" commented="no">
+            <target name="UNB_0001_syntax_identifier" parentPath="/data/UNB/UNB_S001_Syntax_Identifier/"/>
+            <source>
+                <sourceObject name="X_return" parentPath="/X_addResponse/"/>
+            </source>
+        </conversion>
+    </conversions>
+</mapping>

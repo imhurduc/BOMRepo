@@ -1,0 +1,13 @@
+# This is a generic created Atos Schema *** This file was generated with exp2xsd.xsl, do not edit. ***
+#!FGFLAGS=1   *** This file was generated with xsd2text.xsl, do not edit. ***
+#!XML
+  X__header[0:"<?xml"]*1
+  X_addResponse[0:"<addResponse"]
+.
+
+X_addResponse{XML_NAME="addResponse", DELIMITER="\n"}:
+  X_return[0:"<return"]*1
+;
+
+X_return:STRING{XML_NAME="return", MAXLENGTH=250, DELIMITER="\n"};
+X__header:STRING{XML_TYPE=HEADER, DEFAULT="xml version=\"1.0\" encoding=\"UTF-8\"", MAXLENGTH=250, DELIMITER="\n"};

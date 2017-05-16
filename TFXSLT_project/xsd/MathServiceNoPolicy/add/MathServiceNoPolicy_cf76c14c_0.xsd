@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:axis2="http://webservices3.axway.com"
+            xmlns:ns1="http://org.apache.axis2/xsd"
+            xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+            xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+            xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+            xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+            xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+            xmlns:ns_MathServiceNoPolicy="http://service.arno.com/MathServiceNoPolicy"
+            xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+            attributeFormDefault="qualified"
+            elementFormDefault="qualified"
+            targetNamespace="http://service.arno.com/MathServiceNoPolicy">
+   <xsd:element name="add">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element minOccurs="0" name="a" type="xsd:int"/>
+            <xsd:element minOccurs="0" name="b" type="xsd:int"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="addResponse">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element minOccurs="0" name="return" type="xsd:int"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>
