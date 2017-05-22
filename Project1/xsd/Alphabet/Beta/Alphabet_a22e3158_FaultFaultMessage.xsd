@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+            attributeFormDefault="unqualified"
+            elementFormDefault="unqualified"
+            targetNamespace="http://schemas.xmlsoap.org/soap/envelope/">
+   <xsd:import namespace="http://axway.com/bus/samples/alphabet/types"
+               schemaLocation="Alphabet_a22e3158_0.xsd"/>
+   <xsd:element name="FaultMessage" type="xsd:string"/>
+   <xsd:complexType name="detailType">
+      <xsd:sequence>
+         <xsd:element name="FaultMessage" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="FaultType">
+      <xsd:sequence>
+         <xsd:element name="faultcode" type="xsd:QName"/>
+         <xsd:element name="faultstring" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="faultactor" type="xsd:anyURI"/>
+         <xsd:element minOccurs="0" name="detail" type="soapenv:detailType"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Fault" type="soapenv:FaultType"/>
+</xsd:schema>

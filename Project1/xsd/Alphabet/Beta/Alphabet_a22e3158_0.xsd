@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:typens="http://axway.com/bus/samples/alphabet/types"
+            xmlns:wsdl2="http://www.w3.org/ns/wsdl"
+            xmlns:wsoap="http://www.w3.org/ns/wsdl/soap"
+            xmlns:tns="http://axway.com/bus/samples/alphabet"
+            attributeFormDefault="unqualified"
+            elementFormDefault="unqualified"
+            targetNamespace="http://axway.com/bus/samples/alphabet/types">
+   <xsd:element name="AlphaRequest" type="xsd:string"/>
+   <xsd:element name="BetaRequest" type="xsd:string"/>
+   <xsd:element name="GammaRequest" type="xsd:string"/>
+   <xsd:element name="GammaResponse" type="xsd:string"/>
+   <xsd:element name="FaultMessage" type="xsd:string"/>
+</xsd:schema>

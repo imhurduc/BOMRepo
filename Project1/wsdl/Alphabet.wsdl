@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl2:description
+    xmlns:wsdl2="http://www.w3.org/ns/wsdl"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:typens="http://axway.com/bus/samples/alphabet/types"
+    xmlns:tns="http://axway.com/bus/samples/alphabet"
+    xmlns:wsoap="http://www.w3.org/ns/wsdl/soap"
+    targetNamespace="http://axway.com/bus/samples/alphabet">
+
+    <!-- Abstract types -->
+    <wsdl2:types>
+        <xs:schema targetNamespace="http://axway.com/bus/samples/alphabet/types">
+            <xs:element name="AlphaRequest" type="xs:string" />
+            <xs:element name="BetaRequest" type="xs:string" />
+            <xs:element name="GammaRequest" type="xs:string" />
+            <xs:element name="GammaResponse" type="xs:string" />
+            <xs:element name="FaultMessage" type="xs:string" />
+        </xs:schema>
+    </wsdl2:types>
+
+    <!-- Abstract interfaces -->
+    <wsdl2:interface name="AlphabetInterface">
+
+        <!--  Fault declaration -->
+        <wsdl2:fault name="invalidDataFault" element="typens:FaultMessage" />
+
+        <!-- Operation declaration -->
+        <wsdl2:operation name="Alpha" pattern="http://www.w3.org/ns/wsdl/in-only">
+            <wsdl2:input element="typens:AlphaRequest" />
+        </wsdl2:operation>
+
+        <wsdl2:operation name="Beta" pattern="http://www.w3.org/ns/wsdl/robust-in-only">
+            <wsdl2:input element="typens:BetaRequest" />
+            <wsdl2:outfault ref="tns:invalidDataFault" messageLabel="Out" />
+        </wsdl2:operation>
+
+        <wsdl2:operation name="Gamma" pattern="http://www.w3.org/ns/wsdl/in-out">
+            <wsdl2:input element="typens:GammaRequest" />
+            <wsdl2:output element="typens:GammaResponse" />
+            <wsdl2:outfault ref="tns:invalidDataFault" messageLabel="Out" />
+        </wsdl2:operation>
+
+    </wsdl2:interface>
+    
+    <wsdl2:binding name="AlphabetSOAP11Binding" interface="tns:AlphabetInterface" type="http://www.w3.org/ns/wsdl/soap" wsoap:version="1.1">
+        <wsdl2:operation ref="tns:Alpha" wsoap:action="urn:Alpha"/>
+        <wsdl2:operation ref="tns:Beta" wsoap:action="urn:Beta"/>
+    </wsdl2:binding>
+
+    <!-- Service declaration -->
+    <wsdl2:service name="Alphabet" interface="tns:AlphabetInterface">
+    
+        <!-- endpoint declaration -->
+        <wsdl2:endpoint name="AlphabetEndpoint" binding="tns:AlphabetSOAP11Binding" address="http://localhost:8080/axis2/services/Alphabet"/>
+    </wsdl2:service>
+
+</wsdl2:description>
