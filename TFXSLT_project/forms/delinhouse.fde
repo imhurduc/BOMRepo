@@ -12,11 +12,19 @@
 # Neue Formatbeschreibung
 #!FGFLAGS=1
 
-version[0:"version"]*1
-data[0:"HEAD"]+.
+  version [0:"version"]*1
+ data [0:"HEAD"]+
+.
+
+
 
 data:
-Head[0:"HEAD"] Article_Grp[0:"ARTI"]+ Trailer[0:"TRLR"]*;
+ Head [0:"HEAD"]
+ Article_Grp [0:"ARTI"]+
+ Trailer [0:"TRLR"]*
+;
+
+
 
 Head{LENGTH=200}:
 	idHead
@@ -151,4 +159,6 @@ Text_No:		NSTRINGA{ LENGTH=10};
 Trailer_No:		NSTRINGA{ LENGTH=10};
 Filler_Trailer:	STRINGA { LENGTH=122};
 version         : STRINGA { MAXLENGTH=250, DEFAULT="$Header: $" };
+
+
 
