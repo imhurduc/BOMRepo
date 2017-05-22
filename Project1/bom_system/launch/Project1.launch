@@ -1,0 +1,34 @@
+<launchConfiguration type="de.actis.bom.ui.ACTISTransformationLaunchConfigurationType">
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_TARGET_PWD" value=""></stringAttribute>
+<intAttribute key="de.actis.bom.ui.DEL_TEMPTFFILE" value="2"></intAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_TARGET_HOSTNAME" value=""></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_TRACE_FILE" value="/formdb/trace.txt"></stringAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_DB_USE_PARAM_TF" value="true"></booleanAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_TRACE_SORTER" value="false"></booleanAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_TRACE_COMPLETE" value="false"></booleanAttribute>
+<mapAttribute key="de.actis.bom.ui.ATTR_PARAMETERS_ENABLED"></mapAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_TARGET_NAME" value=""></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SOURCE_NAME" value=""></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_SOURCE_INPUT" value="testdata/delivery.example.tst"></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SOURCE_USER" value=""></stringAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_TRACE_ABBILDER" value="false"></booleanAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SOURCE_PORT" value=""></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_SOURCE_OUTPUT" value="testdata/delivery.example.out.tst"></stringAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_DB_SQL_DYNAMIC_CURSOR" value="false"></booleanAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SQL_COMMAND" value=""></stringAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_TRACE_USE_FILE" value="false"></booleanAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_SOURCE_PROJECT" value="Project1"></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_TARGET_USER" value=""></stringAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SOURCE_PWD" value=""></stringAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_TRACE_SCANNER" value="false"></booleanAttribute>
+<mapAttribute key="de.actis.bom.ui.ATTR_STEPS">
+<mapEntry key="3" value="true"></mapEntry>
+<mapEntry key="2" value="true"></mapEntry>
+<mapEntry key="0" value="true"></mapEntry>
+<mapEntry key="1" value="true"></mapEntry>
+</mapAttribute>
+<booleanAttribute key="de.actis.bom.ui.ATTR_DB_USE_CHAR" value="false"></booleanAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_TARGET_PORT" value=""></stringAttribute>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables"></mapAttribute>
+<stringAttribute key="de.actis.bom.ui.ATTR_DB_SOURCE_HOSTNAME" value=""></stringAttribute>
+</launchConfiguration>

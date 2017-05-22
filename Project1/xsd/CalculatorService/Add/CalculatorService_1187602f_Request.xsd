@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+            xmlns:ns0="http://Example.org"
+            attributeFormDefault="qualified"
+            elementFormDefault="qualified"
+            targetNamespace="http://schemas.xmlsoap.org/soap/envelope/">
+   <xsd:import namespace="http://Example.org"
+               schemaLocation="CalculatorService_1187602f_0.xsd"/>
+   <xsd:complexType name="EnvelopeType">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" ref="soapenv:Header"/>
+         <xsd:element ref="soapenv:Body"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Envelope" type="soapenv:EnvelopeType"/>
+   <xsd:complexType name="HeaderType">
+      <xsd:sequence>
+         <xsd:any maxOccurs="unbounded" minOccurs="0" processContents="lax"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Header" type="soapenv:HeaderType"/>
+   <xsd:complexType name="BodyType">
+      <xsd:sequence>
+         <xsd:element ref="ns0:Add"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="Body" type="soapenv:BodyType"/>
+</xsd:schema>

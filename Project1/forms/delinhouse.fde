@@ -1,0 +1,154 @@
+#------------------------------------------------------------------------------#
+# DELINHOUSE Beispiel FormatBeschreibung Inhouse Format (c) Actis GmbH 1997
+# $Header: $
+#
+# $Log: $
+#
+# Das ist ein Beispiel fuer eine Inhouse Fix-Format Nachricht.
+#
+#
+#------------------------------------------------------------------------------#
+# Ein Dummy-Objekt, das als Default Wert einen Versions-String enhaelt.
+# Neue Formatbeschreibung
+#!FGFLAGS=1
+
+version[0:"version"]*1
+data[0:"HEAD"]+.
+
+data:
+Head[0:"HEAD"] Article_Grp[0:"ARTI"]+ Trailer[0:"TRLR"]*;
+
+Head{LENGTH=200}:
+	idHead
+	Sender
+	Seller
+	Buyer
+	Message_Date
+	Number
+	Filler_Head;
+
+idHead:		STRINGA  {LENGTH=4, DEFAULT="HEAD"};
+Sender:     STRINGA  {LENGTH=20};
+Seller:		STRINGA  {LENGTH=20, PICTURE="XXX XXXX XXXXXXXXXXX"};
+Buyer:		STRINGA  {LENGTH=20, PICTURE="XXX XXXX XXXXXXXXXXX"};
+Message_Date:NSTRINGA {LENGTH=6, PICTURE="DDMMYY"};
+Number:		STRINGA  {LENGTH=18,DEFAULT="                  "};
+Filler_Head:STRINGA  {LENGTH=112};
+
+Article_Grp:	Article
+				Location[0:"LCTN"]*1
+				Quantities[0:"QTYS"]+
+				Text[0:"TEXT"]*;
+#-------------------------------------#
+#   Article -- Artikel Details        #
+#-------------------------------------#
+
+Article{LENGTH=200}:		idArticle
+				Article_Number
+				Article_Description
+				Measure_Unit_Specifier
+				Quantity
+				Contract_No
+				Previous_Note_No
+				Previous_Note_Date
+				Filler_Article;
+
+idArticle:		STRINGA{LENGTH=4, DEFAULT="ARTI"};
+Article_Number:	STRINGA{LENGTH=30,DEFAULT="------------------------------"};
+Article_Description:	
+				STRINGA{LENGTH=40};
+Measure_Unit_Specifier:
+				STRINGA{LENGTH=3, DEFAULT="---"};
+Quantity:		NSTRINGA{LENGTH=15, PICTURE="999999999999V999", 
+						 DEFAULT="               "};
+Contract_No:	STRINGA{LENGTH=25, PICTURE="XXX\\-XXXX\\-XXXXXXXXXXXXXXXX"};
+	
+Previous_Note_No:
+				STRINGA{LENGTH=15};
+Previous_Note_Date:
+				NSTRINGA{LENGTH=6, PICTURE="DDMMYY", DEFAULT="!NONE!",
+						 MISSVALUE="!NONE!"};
+Filler_Article:	STRINGA{LENGTH=62};
+
+#-------------------------------------#
+#   Location -- Anlieferort			  #
+#-------------------------------------#
+Location:		idLocation
+				Delivery_Party_Name
+				Delivery_Address_1
+				Delivery_Address_2
+				Delivery_Address_3
+				Filler_Location;
+
+idLocation:		STRINGA{LENGTH=4, DEFAULT="LCTN"};
+Delivery_Party_Name:
+				STRINGA{LENGTH=40};
+Delivery_Address_1:
+				STRINGA{LENGTH=40};
+Delivery_Address_2:
+				STRINGA{LENGTH=40};
+Delivery_Address_3:
+				STRINGA{LENGTH=40};
+Filler_Location:STRINGA{LENGTH=36};
+
+#-------------------------------------#
+#   Quantities -- Termine Mengen	  #
+#-------------------------------------#
+
+Quantities { LENGTH=200, ENDOBJECT=Deliver_Date}:
+				idQuantity
+				Quantity_Grp=9
+				Filler_Quantities;
+
+Quantity_Grp:	Deliver_Date
+				Deliver_Time
+				Deliver_Quantity;
+
+idQuantity	:	STRINGA { LENGTH=4, DEFAULT="QTYS"};
+Deliver_Date:	NSTRINGA{ LENGTH=6, PICTURE="DDMMYY", DEFAULT="      ",
+						  ENDVALUE="000000"};
+Deliver_Time:	NSTRINGA{ LENGTH=4, PICTURE="HHNN", DEFAULT="    "};
+Deliver_Quantity	
+			:	NSTRINGA{ LENGTH=10, PICTURE="99999999V99", 
+						  DEFAULT="          "};
+Filler_Quantities
+			:	STRINGA{LENGTH=16};
+#-------------------------------------#
+#   Text -- Etwas Smalltalk           #
+#-------------------------------------#
+
+Text { LENGTH=200}:
+				idText
+				Text_Line=4
+				Filler_Text;
+
+idText:			STRINGA{LENGTH=4, DEFAULT="TEXT"};
+Text_Line:		STRINGA{LENGTH=40};
+Filler_Text:	STRINGA{LENGTH=36};
+
+#-------------------------------------#
+#   Trailer -- Zaehler und Summen	  #
+#-------------------------------------#
+
+Trailer{LENGTH=200}:		
+				idTrailer
+				Total_Quantity
+				Head_No
+				Article_No
+				Location_No
+				Quantities_No
+				Text_No
+				Trailer_No
+				Filler_Trailer;
+
+idTrailer:		STRINGA { LENGTH=4, DEFAULT="TRLR" };
+Total_Quantity:	NSTRINGA{ LENGTH=14, PICTURE="99999999999V999"};
+Head_No:		NSTRINGA{ LENGTH=10};
+Article_No:		NSTRINGA{ LENGTH=10};
+Location_No:	NSTRINGA{ LENGTH=10};
+Quantities_No:	NSTRINGA{ LENGTH=10};
+Text_No:		NSTRINGA{ LENGTH=10};
+Trailer_No:		NSTRINGA{ LENGTH=10};
+Filler_Trailer:	STRINGA { LENGTH=122};
+version         : STRINGA { MAXLENGTH=250, DEFAULT="$Header: $" };
+
